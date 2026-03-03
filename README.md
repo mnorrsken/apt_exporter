@@ -87,7 +87,7 @@ sudo systemctl daemon-reload
 docker run -d \
   -v /:/host:ro \
   -p 9120:9120 \
-  ghcr.io/mnorrsken/apt_exporter:latest
+  ghcr.io/mnorrsken/apt-exporter:latest
 
 # Or build locally
 make docker-build
