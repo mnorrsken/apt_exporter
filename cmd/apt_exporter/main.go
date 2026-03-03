@@ -111,21 +111,26 @@ func main() {
 	ctx, cancel := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
 	defer cancel()
 
-	// Start update loop.
+	// Check if apt-get is available.
 	runner := apt.NewRunner(*rootfs)
-	go updateLoop(ctx, triggerCh, runner, cache, logger)
+	if runner.Available() {
+		// Start update loop and watcher.
+		go updateLoop(ctx, triggerCh, runner, cache, logger)
 
-	// Trigger initial update.
-	triggerCh <- struct{}{}
+		// Trigger initial update.
+		triggerCh <- struct{}{}
 
-	// Start watcher.
-	watchPath := filepath.Join(*rootfs, "var", "lib", "apt", "lists")
-	w := watcher.New(triggerCh, watchPath, *refreshInterval, logger)
-	go func() {
-		if err := w.Run(ctx); err != nil {
-			logger.Error("watcher error", "err", err)
-		}
-	}()
+		// Start watcher.
+		watchPath := filepath.Join(*rootfs, "var", "lib", "apt", "lists")
+		w := watcher.New(triggerCh, watchPath, *refreshInterval, logger)
+		go func() {
+			if err := w.Run(ctx); err != nil {
+				logger.Error("watcher error", "err", err)
+			}
+		}()
+	} else {
+		logger.Warn("apt-get not found, sleeping until a supported package manager is available")
+	}
 
 	// Set up HTTP server.
 	mux := http.NewServeMux()

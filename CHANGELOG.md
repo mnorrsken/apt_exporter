@@ -20,6 +20,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   - hostNetwork support when hook is enabled
   - Hardened securityContext (non-root, read-only rootfs, all capabilities dropped)
   - Optional ServiceMonitor for prometheus-operator
+- Graceful sleep mode when apt-get is not available (serves empty metrics, ready for future package manager support)
 - Unit tests for parser, collector, watcher, and hook packages
 - Integration tests using testcontainers-go against Ubuntu 22.04 and Debian Bookworm
 - Makefile with build, test, test-integration, docker-build, lint, fmt, vet targets

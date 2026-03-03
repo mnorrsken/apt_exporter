@@ -24,6 +24,17 @@ func (r *Runner) RootFS() string {
 	return r.rootfs
 }
 
+// Available returns true if apt-get is found in PATH (or under rootfs).
+func (r *Runner) Available() bool {
+	if r.rootfs == "/" || r.rootfs == "" {
+		_, err := exec.LookPath("apt-get")
+		return err == nil
+	}
+	// When using RootDir, we still invoke the local apt-get binary.
+	_, err := exec.LookPath("apt-get")
+	return err == nil
+}
+
 // Run executes apt-get --just-print dist-upgrade and returns stdout.
 // When rootfs is not "/", it uses apt's -o RootDir option instead of chroot,
 // which allows running without root privileges.
