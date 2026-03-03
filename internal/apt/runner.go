@@ -25,13 +25,14 @@ func (r *Runner) RootFS() string {
 }
 
 // Run executes apt-get --just-print dist-upgrade and returns stdout.
+// When rootfs is not "/", it uses apt's -o RootDir option instead of chroot,
+// which allows running without root privileges.
 func (r *Runner) Run(ctx context.Context) (string, error) {
-	var cmd *exec.Cmd
-	if r.rootfs == "/" || r.rootfs == "" {
-		cmd = exec.CommandContext(ctx, "apt-get", "--just-print", "dist-upgrade")
-	} else {
-		cmd = exec.CommandContext(ctx, "chroot", r.rootfs, "apt-get", "--just-print", "dist-upgrade")
+	args := []string{"--just-print", "dist-upgrade"}
+	if r.rootfs != "/" && r.rootfs != "" {
+		args = append([]string{"-o", "RootDir=" + r.rootfs}, args...)
 	}
+	cmd := exec.CommandContext(ctx, "apt-get", args...)
 	cmd.Env = append(os.Environ(), "DEBIAN_FRONTEND=noninteractive")
 
 	var stdout, stderr bytes.Buffer

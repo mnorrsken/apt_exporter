@@ -1,4 +1,4 @@
 .scratchpad
 bin/
-apt_exporter
+./apt_exporter
 *.exe

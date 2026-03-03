@@ -19,6 +19,18 @@ resources:
     cpu: 10m
     memory: 32Mi
 
+securityContext:
+  runAsUser: 65534   # nobody
+  runAsGroup: 65534
+  fsGroup: 65534
+
+aptHook:
+  # Install an APT post-invoke hook on the host so apt operations
+  # automatically trigger a metrics refresh. Requires a privileged
+  # init container (runs as root) and hostNetwork (so the host's
+  # curl can reach the exporter on localhost:9120).
+  enabled: false
+
 nodeSelector: {}
 
 tolerations:

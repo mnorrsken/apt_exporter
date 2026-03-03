@@ -6,6 +6,7 @@ import (
 	"context"
 	"io"
 	"net/http"
+	"os"
 	"strings"
 	"testing"
 	"time"
@@ -13,6 +14,13 @@ import (
 	"github.com/testcontainers/testcontainers-go"
 	"github.com/testcontainers/testcontainers-go/wait"
 )
+
+func TestMain(m *testing.M) {
+	// Disable Ryuk reaper — it crashes on some Docker runtimes (e.g. Rancher Desktop).
+	// Containers are cleaned up via deferred Terminate() calls instead.
+	os.Setenv("TESTCONTAINERS_RYUK_DISABLED", "true")
+	os.Exit(m.Run())
+}
 
 func TestExporterOnUbuntu(t *testing.T) {
 	testExporterOnDistro(t, "ubuntu:22.04")
@@ -26,11 +34,8 @@ func testExporterOnDistro(t *testing.T, image string) {
 	t.Helper()
 	ctx := context.Background()
 
-	// Build the binary for linux/amd64.
-	buildBinary(t)
-
 	req := testcontainers.ContainerRequest{
-		Image: image,
+		Image:        image,
 		ExposedPorts: []string{"9120/tcp"},
 		Files: []testcontainers.ContainerFile{
 			{
@@ -41,10 +46,11 @@ func testExporterOnDistro(t *testing.T, image string) {
 		},
 		Cmd: []string{
 			"bash", "-c",
-			"apt-get update -qq && /usr/local/bin/apt_exporter --log.level=debug &" +
-				" sleep 2 && wait",
+			// Run apt-get update first, then exec the exporter as PID 1
+			// so the container stays alive.
+			"apt-get update -qq 2>/dev/null && exec /usr/local/bin/apt_exporter --log.level=debug",
 		},
-		WaitingFor: wait.ForHTTP("/").WithPort("9120/tcp").WithStartupTimeout(60 * time.Second),
+		WaitingFor: wait.ForHTTP("/").WithPort("9120/tcp").WithStartupTimeout(120 * time.Second),
 	}
 
 	container, err := testcontainers.GenericContainer(ctx, testcontainers.GenericContainerRequest{
@@ -110,15 +116,6 @@ func testExporterOnDistro(t *testing.T, image string) {
 	})
 }
 
-func buildBinary(t *testing.T) {
-	t.Helper()
-	// The Makefile builds to bin/apt_exporter. Assume it's already built
-	// via `make build` before running integration tests (CGO_ENABLED=0 for static binary).
-	// Alternatively, build it here:
-	// We skip building in the test to keep it simple - the Makefile target
-	// test-integration should build first.
-}
-
 func httpGet(t *testing.T, url string) string {
 	t.Helper()
 	client := &http.Client{Timeout: 10 * time.Second}
@@ -131,8 +128,8 @@ func httpGet(t *testing.T, url string) string {
 			time.Sleep(1 * time.Second)
 			continue
 		}
-		defer resp.Body.Close()
 		body, err := io.ReadAll(resp.Body)
+		resp.Body.Close()
 		if err != nil {
 			t.Fatalf("reading response body: %v", err)
 		}
@@ -144,4 +141,3 @@ func httpGet(t *testing.T, url string) string {
 	t.Fatalf("GET %s failed after retries: %v", url, lastErr)
 	return ""
 }
-
