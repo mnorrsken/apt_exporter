@@ -1,0 +1,12 @@
+apiVersion: v2
+name: apt-exporter
+description: Prometheus exporter for APT package upgrade metrics
+version: 0.1.0
+appVersion: "0.1.0"
+type: application
+keywords:
+  - prometheus
+  - exporter
+  - apt
+  - debian
+  - ubuntu

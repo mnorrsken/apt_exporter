@@ -1,0 +1,4 @@
+.scratchpad
+bin/
+apt_exporter
+*.exe

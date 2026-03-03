@@ -1,0 +1,15 @@
+Reading package lists...
+Building dependency tree...
+Reading state information...
+Calculating upgrade...
+The following packages will be upgraded:
+  base-files curl libssl3 openssl
+4 upgraded, 0 newly installed, 0 to remove and 0 not upgraded.
+Inst base-files [12ubuntu4.4] (12ubuntu4.5 Ubuntu:22.04/jammy-updates [amd64])
+Inst libssl3 [3.0.2-0ubuntu1.12] (3.0.2-0ubuntu1.13 Ubuntu:22.04/jammy-updates [amd64])
+Inst openssl [3.0.2-0ubuntu1.12] (3.0.2-0ubuntu1.13 Ubuntu:22.04/jammy-updates [amd64])
+Inst curl [7.81.0-1ubuntu1.14] (7.81.0-1ubuntu1.15 Ubuntu:22.04/jammy-security [amd64])
+Conf base-files (12ubuntu4.5 Ubuntu:22.04/jammy-updates [amd64])
+Conf libssl3 (3.0.2-0ubuntu1.13 Ubuntu:22.04/jammy-updates [amd64])
+Conf openssl (3.0.2-0ubuntu1.13 Ubuntu:22.04/jammy-updates [amd64])
+Conf curl (7.81.0-1ubuntu1.15 Ubuntu:22.04/jammy-security [amd64])

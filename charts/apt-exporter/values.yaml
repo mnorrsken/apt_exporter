@@ -1,0 +1,38 @@
+image:
+  repository: ghcr.io/mnorrsken/apt-exporter
+  tag: ""  # defaults to Chart.appVersion
+  pullPolicy: IfNotPresent
+
+service:
+  type: ClusterIP
+  port: 9120
+
+args:
+  - "--apt.rootfs=/host"
+  - "--apt.refresh-interval=24h"
+
+resources:
+  limits:
+    cpu: 100m
+    memory: 64Mi
+  requests:
+    cpu: 10m
+    memory: 32Mi
+
+nodeSelector: {}
+
+tolerations:
+  - operator: Exists
+
+serviceMonitor:
+  enabled: false
+  interval: 60m
+  namespace: ""
+  additionalLabels: {}
+
+podAnnotations: {}
+
+serviceAccount:
+  create: true
+  name: ""
+  annotations: {}
