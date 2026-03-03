@@ -18,8 +18,8 @@ Exposes pending package upgrades, per-package details, and reboot-required statu
 # Build
 make build
 
-# Run (requires root for apt-get access)
-sudo ./bin/apt_exporter
+# Run (no root required for --just-print)
+./bin/apt_exporter
 
 # Fetch metrics
 curl http://localhost:9120/metrics
@@ -64,6 +64,13 @@ sudo apt_exporter hook uninstall
 ## Docker
 
 ```bash
+# From GHCR
+docker run -d \
+  -v /:/host:ro \
+  -p 9120:9120 \
+  ghcr.io/mnorrsken/apt_exporter:latest
+
+# Or build locally
 make docker-build
 docker run -d \
   -v /:/host:ro \
@@ -76,14 +83,25 @@ docker run -d \
 Deploy as a DaemonSet (runs on every node, like node_exporter):
 
 ```bash
+# From GHCR OCI registry
+helm install apt-exporter oci://ghcr.io/mnorrsken/charts/apt-exporter
+
+# Or from local source
 helm install apt-exporter ./charts/apt-exporter
 ```
 
 With prometheus-operator ServiceMonitor:
 
 ```bash
-helm install apt-exporter ./charts/apt-exporter \
+helm install apt-exporter oci://ghcr.io/mnorrsken/charts/apt-exporter \
   --set serviceMonitor.enabled=true
+```
+
+With APT hook (installs post-invoke hook on host via init container):
+
+```bash
+helm install apt-exporter oci://ghcr.io/mnorrsken/charts/apt-exporter \
+  --set aptHook.enabled=true
 ```
 
 See [charts/apt-exporter/values.yaml](charts/apt-exporter/values.yaml) for all options.

@@ -4,24 +4,16 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
-## [Unreleased]
+## v0.1.0
 
 ### Added
-- Initial release of apt_exporter
-- Prometheus metrics: `apt_upgrades_pending`, `apt_upgrade_package`, `node_reboot_required`
-- HTTP server with `/metrics`, `/-/reload`, and landing page endpoints
-- Three cache refresh triggers: inotify on `/var/lib/apt/lists`, APT post-invoke hook, periodic timer (default 24h)
-- `hook install` / `hook uninstall` subcommands for managing the APT hook
-- `/-/reload` endpoint restricted to localhost only
-- Runs as non-root user (uses `apt-get -o RootDir=` instead of chroot)
-- Multi-stage Dockerfile with dedicated non-root user
-- Helm chart for DaemonSet deployment with:
-  - Optional APT hook installation via privileged init container (`aptHook.enabled`)
-  - hostNetwork support when hook is enabled
-  - Hardened securityContext (non-root, read-only rootfs, all capabilities dropped)
-  - Optional ServiceMonitor for prometheus-operator
-- Graceful sleep mode when apt-get is not available (serves empty metrics, ready for future package manager support)
-- Unit tests for parser, collector, watcher, and hook packages
-- Integration tests using testcontainers-go against Ubuntu 22.04 and Debian Bookworm
-- Makefile with build, test, test-integration, docker-build, lint, fmt, vet targets
-- Apache 2.0 license
+- **Prometheus metrics** — `apt_upgrades_pending` (by origin/arch), `apt_upgrade_package` (per-package details), `node_reboot_required`
+- **HTTP server** with `/metrics`, `/-/reload` (localhost-only), and landing page
+- **Three cache refresh triggers** — inotify on `/var/lib/apt/lists` (5s debounce), APT post-invoke hook, periodic timer (default 24h)
+- **`hook install` / `hook uninstall`** subcommands for managing the APT post-invoke hook
+- **Non-root operation** — uses `apt-get -o RootDir=` instead of chroot, runs as dedicated unprivileged user
+- **Graceful sleep mode** when apt-get is not available (serves empty metrics, ready for future package manager support)
+- **Multi-arch Docker image** (amd64/arm64) with dedicated non-root user
+- **Helm chart** for DaemonSet deployment with optional APT hook init container, ServiceMonitor, and hardened securityContext
+- **GitHub Actions** for Docker image and Helm chart releases on version tags
+- Unit and integration tests (Ubuntu 22.04, Debian Bookworm via testcontainers-go)
