@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## v0.1.3
+
+### Fixed
+- **apt-get read-only /tmp** — systemd unit now uses `PrivateTmp=yes` so apt-get can write temp files under `ProtectSystem=strict`
+- **Helm chart read-only /tmp** — added `emptyDir` volume at `/tmp` so apt-get works with `readOnlyRootFilesystem: true`
+
 ## v0.1.2
 
 ### Fixed

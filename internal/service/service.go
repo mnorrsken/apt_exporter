@@ -29,6 +29,7 @@ Restart=on-failure
 RestartSec=5
 ProtectSystem=strict
 ProtectHome=yes
+PrivateTmp=yes
 ReadOnlyPaths=/var/lib/apt /var/lib/dpkg /run
 NoNewPrivileges=yes
 CapabilityBoundingSet=

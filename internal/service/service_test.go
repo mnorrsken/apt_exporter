@@ -19,6 +19,7 @@ func TestContent(t *testing.T) {
 		{"ProtectSystem", "ProtectSystem=strict"},
 		{"NoNewPrivileges", "NoNewPrivileges=yes"},
 		{"WantedBy", "WantedBy=multi-user.target"},
+		{"PrivateTmp", "PrivateTmp=yes"},
 		{"ReadOnlyPaths", "ReadOnlyPaths=/var/lib/apt /var/lib/dpkg /run"},
 	}
 
