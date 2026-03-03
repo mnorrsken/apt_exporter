@@ -16,6 +16,7 @@ import (
 	"github.com/mnorrsken/apt_exporter/internal/apt"
 	"github.com/mnorrsken/apt_exporter/internal/collector"
 	"github.com/mnorrsken/apt_exporter/internal/hook"
+	"github.com/mnorrsken/apt_exporter/internal/service"
 	"github.com/mnorrsken/apt_exporter/internal/watcher"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
@@ -59,6 +60,17 @@ func main() {
 	hookUninstallRootfs := hookUninstallCmd.Flag("rootfs", "Root filesystem prefix.").
 		Default("/").String()
 
+	serviceCmd := app.Command("service", "Manage systemd service.")
+	serviceInstallCmd := serviceCmd.Command("install", "Install systemd service unit.")
+	serviceInstallUnitPath := serviceInstallCmd.Flag("unit-path", "Systemd unit file path.").
+		Default(service.DefaultUnitPath).String()
+	serviceInstallExecPath := serviceInstallCmd.Flag("exec-path", "Path to apt_exporter binary.").
+		Default(service.DefaultExecPath).String()
+
+	serviceUninstallCmd := serviceCmd.Command("uninstall", "Uninstall systemd service unit.")
+	serviceUninstallUnitPath := serviceUninstallCmd.Flag("unit-path", "Systemd unit file path.").
+		Default(service.DefaultUnitPath).String()
+
 	parsed, err := app.DefaultEnvars().Parse(os.Args[1:])
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "error: %v\n", err)
@@ -81,6 +93,25 @@ func main() {
 		}
 		fmt.Println("APT hook uninstalled successfully.")
 		return
+
+	case serviceInstallCmd.FullCommand():
+		if err := service.Install(*serviceInstallUnitPath, *serviceInstallExecPath); err != nil {
+			fmt.Fprintf(os.Stderr, "error installing service: %v\n", err)
+			os.Exit(1)
+		}
+		fmt.Printf("Systemd unit installed at %s.\n", *serviceInstallUnitPath)
+		fmt.Println("Run: sudo systemctl daemon-reload && sudo systemctl enable --now apt-exporter")
+		return
+
+	case serviceUninstallCmd.FullCommand():
+		if err := service.Uninstall(*serviceUninstallUnitPath); err != nil {
+			fmt.Fprintf(os.Stderr, "error uninstalling service: %v\n", err)
+			os.Exit(1)
+		}
+		fmt.Println("Systemd unit removed.")
+		fmt.Println("Run: sudo systemctl disable --now apt-exporter && sudo systemctl daemon-reload")
+		return
+
 	}
 
 	// Set up logger.
@@ -121,8 +152,11 @@ func main() {
 		triggerCh <- struct{}{}
 
 		// Start watcher.
-		watchPath := filepath.Join(*rootfs, "var", "lib", "apt", "lists")
-		w := watcher.New(triggerCh, watchPath, *refreshInterval, logger)
+		watchPaths := []string{
+			filepath.Join(*rootfs, "var", "lib", "apt", "lists"),
+			filepath.Join(*rootfs, "var", "lib", "dpkg"),
+		}
+		w := watcher.New(triggerCh, watchPaths, *refreshInterval, logger)
 		go func() {
 			if err := w.Run(ctx); err != nil {
 				logger.Error("watcher error", "err", err)

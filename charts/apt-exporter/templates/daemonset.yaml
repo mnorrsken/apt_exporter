@@ -18,32 +18,11 @@ spec:
       {{- end }}
     spec:
       serviceAccountName: {{ include "apt-exporter.serviceAccountName" . }}
-      {{- if .Values.aptHook.enabled }}
-      hostNetwork: true
-      dnsPolicy: ClusterFirstWithHostNet
-      {{- end }}
       securityContext:
         runAsNonRoot: true
         runAsUser: {{ .Values.securityContext.runAsUser }}
         runAsGroup: {{ .Values.securityContext.runAsGroup }}
         fsGroup: {{ .Values.securityContext.fsGroup }}
-      {{- if .Values.aptHook.enabled }}
-      initContainers:
-        - name: install-apt-hook
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
-          command: ["/usr/local/bin/apt_exporter", "hook", "install", "--rootfs=/host"]
-          securityContext:
-            runAsNonRoot: false
-            runAsUser: 0
-            allowPrivilegeEscalation: false
-            capabilities:
-              drop:
-                - ALL
-          volumeMounts:
-            - name: host-etc-apt
-              mountPath: /host/etc/apt
-      {{- end }}
       containers:
         - name: apt-exporter
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
@@ -79,11 +58,6 @@ spec:
         - name: host-root
           hostPath:
             path: /
-        {{- if .Values.aptHook.enabled }}
-        - name: host-etc-apt
-          hostPath:
-            path: /etc/apt
-        {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

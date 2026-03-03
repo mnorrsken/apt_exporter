@@ -16,8 +16,8 @@ const (
 // Content generates the APT hook configuration content.
 func Content(endpoint string) string {
 	return fmt.Sprintf(`// Installed by apt_exporter. Do not edit.
-APT::Update::Post-Invoke {"curl -fsS -o /dev/null %s || true";};
-DPkg::Post-Invoke {"curl -fsS -o /dev/null %s || true";};
+APT::Update::Post-Invoke {"curl -fsS --connect-timeout 1 --max-time 5 -o /dev/null %s || true";};
+DPkg::Post-Invoke {"curl -fsS --connect-timeout 1 --max-time 5 -o /dev/null %s || true";};
 `, endpoint, endpoint)
 }
 

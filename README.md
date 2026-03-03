@@ -39,8 +39,8 @@ curl http://localhost:9120/metrics
 
 The exporter caches APT data in memory and refreshes via three triggers:
 
-1. **inotify** - watches `/var/lib/apt/lists` for changes (5s debounce)
-2. **APT hook** - post-invoke hook calls `/-/reload` after apt operations
+1. **inotify** - watches `/var/lib/apt/lists` and `/var/lib/dpkg` for changes (5s debounce)
+2. **APT hook** (optional, bare-metal only) - post-invoke hook calls `/-/reload` after apt operations
 3. **Periodic timer** - safety net refresh (default 24h)
 
 Metrics are always served from cache, so scrapes never block on `apt-get`.
@@ -53,12 +53,31 @@ Install a hook so apt operations automatically trigger a cache refresh:
 sudo apt_exporter hook install
 ```
 
-This creates `/etc/apt/apt.conf.d/80-apt-exporter` which calls the exporter's reload endpoint after `apt update` and `dpkg` operations.
+This creates `/etc/apt/apt.conf.d/80-apt-exporter` which calls the exporter's reload endpoint after `apt update` and `dpkg` operations. The hook uses short timeouts (`--connect-timeout 1 --max-time 5`) so apt operations are never blocked if the exporter is down.
 
 To remove:
 
 ```bash
 sudo apt_exporter hook uninstall
+```
+
+## Systemd Service
+
+Install as a systemd service (runs unprivileged via `DynamicUser=yes`):
+
+```bash
+sudo cp bin/apt_exporter /usr/local/bin/
+sudo apt_exporter service install
+sudo systemctl daemon-reload
+sudo systemctl enable --now apt-exporter
+```
+
+To remove:
+
+```bash
+sudo systemctl disable --now apt-exporter
+sudo apt_exporter service uninstall
+sudo systemctl daemon-reload
 ```
 
 ## Docker
@@ -97,14 +116,9 @@ helm install apt-exporter oci://ghcr.io/mnorrsken/charts/apt-exporter \
   --set serviceMonitor.enabled=true
 ```
 
-With APT hook (installs post-invoke hook on host via init container):
-
-```bash
-helm install apt-exporter oci://ghcr.io/mnorrsken/charts/apt-exporter \
-  --set aptHook.enabled=true
-```
-
 See [charts/apt-exporter/values.yaml](charts/apt-exporter/values.yaml) for all options.
+
+The Helm chart runs entirely as a non-root user with no privilege escalation. inotify on the host's apt and dpkg directories (world-readable) detects all package changes automatically.
 
 ## Development
 

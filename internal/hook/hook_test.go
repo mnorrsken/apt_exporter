@@ -22,6 +22,12 @@ func TestContent(t *testing.T) {
 	if !strings.Contains(content, "|| true") {
 		t.Error("content missing '|| true' safety guard")
 	}
+	if !strings.Contains(content, "--connect-timeout 1") {
+		t.Error("content missing --connect-timeout")
+	}
+	if !strings.Contains(content, "--max-time 5") {
+		t.Error("content missing --max-time")
+	}
 }
 
 func TestInstallAndUninstall(t *testing.T) {

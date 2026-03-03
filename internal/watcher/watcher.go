@@ -8,19 +8,19 @@ import (
 	"github.com/fsnotify/fsnotify"
 )
 
-// Watcher monitors for APT changes via inotify and periodic timer.
+// Watcher monitors for package manager changes via inotify and periodic timer.
 type Watcher struct {
 	triggerCh       chan<- struct{}
-	watchPath       string
+	watchPaths      []string
 	refreshInterval time.Duration
 	logger          *slog.Logger
 }
 
 // New creates a new Watcher.
-func New(triggerCh chan<- struct{}, watchPath string, interval time.Duration, logger *slog.Logger) *Watcher {
+func New(triggerCh chan<- struct{}, watchPaths []string, interval time.Duration, logger *slog.Logger) *Watcher {
 	return &Watcher{
 		triggerCh:       triggerCh,
-		watchPath:       watchPath,
+		watchPaths:      watchPaths,
 		refreshInterval: interval,
 		logger:          logger,
 	}
@@ -43,10 +43,12 @@ func (w *Watcher) Run(ctx context.Context) error {
 	}
 	defer fsWatcher.Close()
 
-	if err := fsWatcher.Add(w.watchPath); err != nil {
-		w.logger.Warn("failed to watch apt lists dir, continuing without inotify", "path", w.watchPath, "err", err)
-	} else {
-		w.logger.Info("watching for apt changes", "path", w.watchPath)
+	for _, path := range w.watchPaths {
+		if err := fsWatcher.Add(path); err != nil {
+			w.logger.Warn("failed to watch path, continuing without inotify", "path", path, "err", err)
+		} else {
+			w.logger.Info("watching for changes", "path", path)
+		}
 	}
 
 	ticker := time.NewTicker(w.refreshInterval)

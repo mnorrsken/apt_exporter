@@ -14,7 +14,7 @@ func TestPeriodicTrigger(t *testing.T) {
 	dir := t.TempDir()
 	logger := slog.New(slog.NewTextHandler(os.Stderr, &slog.HandlerOptions{Level: slog.LevelError}))
 
-	w := New(triggerCh, dir, 100*time.Millisecond, logger)
+	w := New(triggerCh, []string{dir}, 100*time.Millisecond, logger)
 
 	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 	defer cancel()
@@ -37,7 +37,7 @@ func TestInotifyTrigger(t *testing.T) {
 	logger := slog.New(slog.NewTextHandler(os.Stderr, &slog.HandlerOptions{Level: slog.LevelError}))
 
 	// Use a long periodic interval so only inotify fires.
-	w := New(triggerCh, dir, 1*time.Hour, logger)
+	w := New(triggerCh, []string{dir}, 1*time.Hour, logger)
 
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
@@ -65,7 +65,7 @@ func TestInotifyTrigger(t *testing.T) {
 func TestNonBlockingSend(t *testing.T) {
 	triggerCh := make(chan struct{}, 1)
 	logger := slog.New(slog.NewTextHandler(os.Stderr, &slog.HandlerOptions{Level: slog.LevelError}))
-	w := New(triggerCh, "/tmp", time.Hour, logger)
+	w := New(triggerCh, []string{"/tmp"}, time.Hour, logger)
 
 	// Fill the channel.
 	triggerCh <- struct{}{}
