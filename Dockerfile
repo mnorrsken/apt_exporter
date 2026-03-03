@@ -1,9 +1,11 @@
-FROM golang:1.24-bookworm AS builder
+ARG BUILDPLATFORM
+FROM --platform=$BUILDPLATFORM golang:1.24-bookworm AS builder
 WORKDIR /build
 COPY go.mod go.sum ./
 RUN go mod download
 COPY . .
-RUN CGO_ENABLED=0 go build -ldflags "-s -w" -o /apt_exporter ./cmd/apt_exporter
+ARG TARGETOS TARGETARCH
+RUN CGO_ENABLED=0 GOOS=${TARGETOS} GOARCH=${TARGETARCH} go build -ldflags "-s -w" -o /apt_exporter ./cmd/apt_exporter
 
 FROM debian:bookworm-slim
 RUN apt-get update && \
