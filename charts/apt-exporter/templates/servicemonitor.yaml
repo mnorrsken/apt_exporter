@@ -12,6 +12,8 @@ metadata:
     {{- toYaml . | nindent 4 }}
     {{- end }}
 spec:
+  attachMetadata:
+    node: true
   selector:
     matchLabels:
       {{- include "apt-exporter.selectorLabels" . | nindent 6 }}
