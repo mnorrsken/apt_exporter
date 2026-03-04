@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## v0.1.4
+
+### Changed
+- **Helm chart memory limits** — increased to 128Mi limit / 64Mi request to accommodate startup spike during initial APT scan
+
 ## v0.1.3
 
 ### Fixed
