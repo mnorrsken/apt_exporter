@@ -41,7 +41,13 @@ func (r *Runner) Available() bool {
 func (r *Runner) Run(ctx context.Context) (string, error) {
 	args := []string{"--just-print", "dist-upgrade"}
 	if r.rootfs != "/" && r.rootfs != "" {
-		args = append([]string{"-o", "RootDir=" + r.rootfs}, args...)
+		// Use the container's own apt method binaries (absolute path, not prefixed
+		// with RootDir) to avoid GLIBC version mismatches when the host's method
+		// binaries are compiled against a newer libc than the container provides.
+		args = append([]string{
+			"-o", "RootDir=" + r.rootfs,
+			"-o", "Dir::Bin::methods=/usr/lib/apt/methods",
+		}, args...)
 	}
 	cmd := exec.CommandContext(ctx, "apt-get", args...)
 	cmd.Env = append(os.Environ(), "DEBIAN_FRONTEND=noninteractive")

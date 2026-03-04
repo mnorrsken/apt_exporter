@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## v0.1.5
+
+### Fixed
+- **GLIBC mismatch in Kubernetes** — when using `--apt.rootfs=/host`, apt now uses the container's own method binaries (`Dir::Bin::methods`) instead of the host's, preventing failures when the host's apt methods require a newer GLIBC than the container provides.
+
 ## v0.1.4
 
 ### Changed
