@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## v0.1.8
+
+### Fixed
+- **Helm ServiceMonitor scrapes all nodes** — the Service is now headless (`clusterIP: None`) so Prometheus discovers and scrapes each DaemonSet pod individually instead of load-balancing to a random node. A `node` relabeling is added so metrics carry the Kubernetes node name.
+
 ## v0.1.7
 
 ### Fixed

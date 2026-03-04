@@ -122,6 +122,8 @@ See [charts/apt-exporter/values.yaml](charts/apt-exporter/values.yaml) for all o
 
 The Helm chart runs as root with `SYS_CHROOT` capability so it can chroot into the host filesystem and run the host's apt-get against the host's own libc, avoiding GLIBC version mismatches. inotify on the host's apt and dpkg directories detects all package changes automatically.
 
+The Service is headless so that when `serviceMonitor.enabled=true`, Prometheus scrapes every node individually. Each target gets a `node` label from Kubernetes pod metadata.
+
 ## Development
 
 ```bash

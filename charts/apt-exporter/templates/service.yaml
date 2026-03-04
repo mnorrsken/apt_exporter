@@ -8,7 +8,7 @@ metadata:
     prometheus.io/scrape: "true"
     prometheus.io/port: "9120"
 spec:
-  type: {{ .Values.service.type }}
+  clusterIP: None
   ports:
     - port: {{ .Values.service.port }}
       targetPort: metrics
