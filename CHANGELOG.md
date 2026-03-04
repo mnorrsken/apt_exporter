@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## v0.1.7
+
+### Fixed
+- **Multi-origin package parsing** — packages available from multiple origins (e.g. `noble-updates, noble-security`) are now parsed correctly: origin uses the first entry and arch is extracted from the final `[arch]` field instead of being misidentified as a second origin.
+
 ## v0.1.6
 
 ### Fixed

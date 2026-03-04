@@ -109,6 +109,25 @@ func TestParseNoCurrentVersion(t *testing.T) {
 	}
 }
 
+func TestParseMultiOrigin(t *testing.T) {
+	output := readFixture(t, "apt_output_multi_origin.txt")
+	result, err := Parse(output)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	if got := result.TotalPending(); got != 2 {
+		t.Errorf("TotalPending() = %d, want 2", got)
+	}
+
+	expected := []PackageUpgrade{
+		{Package: "sosreport", FromVersion: "4.9.2-0ubuntu0~24.04.1", ToVersion: "4.10.2-0ubuntu0~24.04.1", Origin: "Ubuntu:24.04/noble-updates", Arch: "amd64"},
+		{Package: "intel-microcode", FromVersion: "3.20250812.0ubuntu0.24.04.1", ToVersion: "3.20260210.0ubuntu0.24.04.1", Origin: "Ubuntu:24.04/noble-updates", Arch: "amd64"},
+	}
+
+	assertPackages(t, result.Packages, expected)
+}
+
 func TestParseEmptyString(t *testing.T) {
 	result, err := Parse("")
 	if err != nil {

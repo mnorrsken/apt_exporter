@@ -91,11 +91,13 @@ func parseLine(line string) *PackageUpgrade {
 	if len(remaining) >= 1 {
 		pkg.ToVersion = remaining[0]
 	}
-	if len(remaining) >= 2 {
-		pkg.Origin = remaining[1]
-	}
 	if len(remaining) >= 3 {
-		pkg.Arch = remaining[2]
+		// Arch is always the last field; origin is the first after version.
+		// Multiple origins are separated by commas: strip trailing comma.
+		pkg.Arch = remaining[len(remaining)-1]
+		pkg.Origin = strings.TrimRight(remaining[1], ",")
+	} else if len(remaining) >= 2 {
+		pkg.Origin = strings.TrimRight(remaining[1], ",")
 	}
 
 	return pkg
