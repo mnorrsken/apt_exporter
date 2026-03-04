@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"log/slog"
-	"net"
 	"net/http"
 	"os"
 	"os/signal"
@@ -170,10 +169,6 @@ func main() {
 	mux := http.NewServeMux()
 	mux.Handle(*metricsPath, promhttp.Handler())
 	mux.HandleFunc("/-/reload", func(w http.ResponseWriter, r *http.Request) {
-		if !isLoopback(r.RemoteAddr) {
-			http.Error(w, "Forbidden: reload only allowed from localhost.", http.StatusForbidden)
-			return
-		}
 		select {
 		case triggerCh <- struct{}{}:
 			w.WriteHeader(http.StatusOK)
@@ -242,12 +237,3 @@ func updateLoop(ctx context.Context, triggerCh <-chan struct{}, runner *apt.Runn
 	}
 }
 
-// isLoopback returns true if remoteAddr is a loopback address (127.0.0.0/8 or ::1).
-func isLoopback(remoteAddr string) bool {
-	host, _, err := net.SplitHostPort(remoteAddr)
-	if err != nil {
-		host = remoteAddr
-	}
-	ip := net.ParseIP(host)
-	return ip != nil && ip.IsLoopback()
-}

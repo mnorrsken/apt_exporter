@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"syscall"
 )
 
 // Runner executes apt-get and returns its stdout.
@@ -30,26 +31,22 @@ func (r *Runner) Available() bool {
 		_, err := exec.LookPath("apt-get")
 		return err == nil
 	}
-	// When using RootDir, we still invoke the local apt-get binary.
-	_, err := exec.LookPath("apt-get")
+	// When using chroot, check for apt-get inside the rootfs.
+	_, err := os.Stat(r.rootfs + "/usr/bin/apt-get")
 	return err == nil
 }
 
 // Run executes apt-get --just-print dist-upgrade and returns stdout.
-// When rootfs is not "/", it uses apt's -o RootDir option instead of chroot,
-// which allows running without root privileges.
+// When rootfs is not "/", it uses chroot so that the host's apt-get runs
+// against the host's own libc, avoiding GLIBC version mismatches.
 func (r *Runner) Run(ctx context.Context) (string, error) {
-	args := []string{"--just-print", "dist-upgrade"}
+	var cmd *exec.Cmd
 	if r.rootfs != "/" && r.rootfs != "" {
-		// Use the container's own apt method binaries (absolute path, not prefixed
-		// with RootDir) to avoid GLIBC version mismatches when the host's method
-		// binaries are compiled against a newer libc than the container provides.
-		args = append([]string{
-			"-o", "RootDir=" + r.rootfs,
-			"-o", "Dir::Bin::methods=/usr/lib/apt/methods",
-		}, args...)
+		cmd = exec.CommandContext(ctx, "apt-get", "--just-print", "dist-upgrade")
+		cmd.SysProcAttr = &syscall.SysProcAttr{Chroot: r.rootfs}
+	} else {
+		cmd = exec.CommandContext(ctx, "apt-get", "--just-print", "dist-upgrade")
 	}
-	cmd := exec.CommandContext(ctx, "apt-get", args...)
 	cmd.Env = append(os.Environ(), "DEBIAN_FRONTEND=noninteractive")
 
 	var stdout, stderr bytes.Buffer

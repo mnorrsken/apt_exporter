@@ -86,6 +86,7 @@ sudo systemctl daemon-reload
 # From GHCR
 docker run -d \
   -v /:/host:ro \
+  --cap-add SYS_CHROOT \
   -p 9120:9120 \
   ghcr.io/mnorrsken/apt-exporter:latest
 
@@ -93,6 +94,7 @@ docker run -d \
 make docker-build
 docker run -d \
   -v /:/host:ro \
+  --cap-add SYS_CHROOT \
   -p 9120:9120 \
   apt-exporter:dev
 ```
@@ -118,7 +120,7 @@ helm install apt-exporter oci://ghcr.io/mnorrsken/charts/apt-exporter \
 
 See [charts/apt-exporter/values.yaml](charts/apt-exporter/values.yaml) for all options.
 
-The Helm chart runs entirely as a non-root user with no privilege escalation. inotify on the host's apt and dpkg directories (world-readable) detects all package changes automatically.
+The Helm chart runs as root with `SYS_CHROOT` capability so it can chroot into the host filesystem and run the host's apt-get against the host's own libc, avoiding GLIBC version mismatches. inotify on the host's apt and dpkg directories detects all package changes automatically.
 
 ## Development
 

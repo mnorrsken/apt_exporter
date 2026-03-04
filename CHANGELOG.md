@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## v0.1.6
+
+### Fixed
+- **GLIBC mismatch in containers** — when using `--apt.rootfs=/host`, the exporter now uses `chroot` into the host filesystem so the host's apt-get runs against the host's own libc, eliminating GLIBC/GLIBCXX version mismatch errors. Requires `SYS_CHROOT` capability (added to Helm chart and Docker examples).
+
 ## v0.1.5
 
 ### Fixed

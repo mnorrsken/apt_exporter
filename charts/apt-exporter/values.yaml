@@ -20,9 +20,9 @@ resources:
     memory: 64Mi
 
 securityContext:
-  runAsUser: 65534   # nobody
-  runAsGroup: 65534
-  fsGroup: 65534
+  runAsUser: 0   # root required for chroot syscall
+  runAsGroup: 0
+  fsGroup: 0
 
 nodeSelector: {}
 

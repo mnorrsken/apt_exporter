@@ -19,7 +19,6 @@ spec:
     spec:
       serviceAccountName: {{ include "apt-exporter.serviceAccountName" . }}
       securityContext:
-        runAsNonRoot: true
         runAsUser: {{ .Values.securityContext.runAsUser }}
         runAsGroup: {{ .Values.securityContext.runAsGroup }}
         fsGroup: {{ .Values.securityContext.fsGroup }}
@@ -50,6 +49,8 @@ spec:
             capabilities:
               drop:
                 - ALL
+              add:
+                - SYS_CHROOT
           volumeMounts:
             - name: host-root
               mountPath: /host
