@@ -1,0 +1,15 @@
+#!/bin/sh
+set -e
+
+if [ -d /run/systemd/system ]; then
+    systemctl --system daemon-reload >/dev/null || true
+fi
+
+if [ "$1" = "remove" ] && [ -x /usr/bin/deb-systemd-helper ]; then
+    deb-systemd-helper mask apt-exporter.service >/dev/null || true
+fi
+
+if [ "$1" = "purge" ] && [ -x /usr/bin/deb-systemd-helper ]; then
+    deb-systemd-helper purge apt-exporter.service >/dev/null || true
+    deb-systemd-helper unmask apt-exporter.service >/dev/null || true
+fi

@@ -1,0 +1,21 @@
+[Unit]
+Description=Prometheus APT Exporter
+Documentation=https://github.com/mnorrsken/apt_exporter
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/apt_exporter serve
+DynamicUser=yes
+Restart=on-failure
+RestartSec=5
+ProtectSystem=strict
+ProtectHome=yes
+PrivateTmp=yes
+ReadOnlyPaths=/var/lib/apt /var/lib/dpkg /run
+NoNewPrivileges=yes
+CapabilityBoundingSet=
+
+[Install]
+WantedBy=multi-user.target

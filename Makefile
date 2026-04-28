@@ -4,7 +4,7 @@ LDFLAGS    := -X main.version=$(VERSION) -X main.buildDate=$(shell date -u +%Y-%
 GO         := go
 GOLANGCI   := golangci-lint
 
-.PHONY: build test test-integration run clean docker-build lint fmt vet
+.PHONY: build test test-integration run clean docker-build deb deb-amd64 deb-arm64 lint fmt vet
 
 build:
 	$(GO) build -ldflags "$(LDFLAGS)" -o bin/$(BINARY) ./cmd/apt_exporter
@@ -22,10 +22,28 @@ run: build
 	./bin/$(BINARY)
 
 clean:
-	rm -rf bin/
+	rm -rf bin/ dist/
 
 docker-build:
 	docker build -t apt-exporter:$(VERSION) .
+
+deb: deb-amd64 deb-arm64
+
+deb-amd64:
+	docker buildx build -f Dockerfile.deb \
+		--platform linux/amd64 \
+		--build-arg VERSION=$(VERSION) \
+		--target export \
+		--output type=local,dest=./dist \
+		.
+
+deb-arm64:
+	docker buildx build -f Dockerfile.deb \
+		--platform linux/arm64 \
+		--build-arg VERSION=$(VERSION) \
+		--target export \
+		--output type=local,dest=./dist \
+		.
 
 lint:
 	$(GOLANGCI) run ./...

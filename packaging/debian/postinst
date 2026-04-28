@@ -1,0 +1,12 @@
+#!/bin/sh
+set -e
+
+if [ "$1" = "configure" ] && [ -d /run/systemd/system ]; then
+    systemctl --system daemon-reload >/dev/null || true
+    if deb-systemd-helper --quiet was-enabled apt-exporter.service; then
+        deb-systemd-helper enable apt-exporter.service >/dev/null || true
+    else
+        deb-systemd-helper update-state apt-exporter.service >/dev/null || true
+    fi
+    deb-systemd-invoke restart apt-exporter.service >/dev/null || true
+fi

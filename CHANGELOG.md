@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## v0.1.10
+
+### Added
+- **Debian packages** — `.deb` packages for `amd64` and `arm64` are built on every release tag and attached as GitHub release artifacts. Installs the binary at `/usr/bin/apt_exporter` and a hardened systemd unit at `/lib/systemd/system/apt-exporter.service` (enabled and started on install). Build locally with `make deb`.
+
 ## v0.1.9
 
 ### Fixed

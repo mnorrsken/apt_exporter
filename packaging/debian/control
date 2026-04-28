@@ -1,0 +1,13 @@
+Package: apt-exporter
+Version: @VERSION@
+Section: admin
+Priority: optional
+Architecture: @ARCH@
+Maintainer: Martin Norrsken <martin.norrsken@gmail.com>
+Depends: apt
+Description: Prometheus exporter for APT package upgrade metrics
+ Exposes pending package upgrades, per-package details, and reboot-required
+ status as Prometheus metrics via HTTP. Caches APT data in memory and
+ refreshes via inotify, an optional APT post-invoke hook, and a periodic
+ timer so scrapes never block on apt-get.
+Homepage: https://github.com/mnorrsken/apt_exporter

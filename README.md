@@ -61,9 +61,27 @@ To remove:
 sudo apt_exporter hook uninstall
 ```
 
-## Systemd Service
+## Debian/Ubuntu Package
 
-Install as a systemd service (runs unprivileged via `DynamicUser=yes`):
+Pre-built `.deb` packages for `amd64` and `arm64` are attached to each [GitHub release](https://github.com/mnorrsken/apt_exporter/releases). The package installs the binary at `/usr/bin/apt_exporter` and a hardened systemd unit (`DynamicUser=yes`) that is enabled and started on install.
+
+```bash
+# Download the .deb for your architecture from the latest release, then:
+sudo dpkg -i apt-exporter_<version>_<arch>.deb
+sudo systemctl status apt-exporter
+```
+
+To build the packages locally (requires Docker with buildx):
+
+```bash
+make deb           # builds both amd64 and arm64 into ./dist/
+make deb-amd64     # amd64 only
+make deb-arm64     # arm64 only
+```
+
+## Systemd Service (manual install)
+
+If you're not using the `.deb` package, install as a systemd service from a built binary (runs unprivileged via `DynamicUser=yes`):
 
 ```bash
 sudo cp bin/apt_exporter /usr/local/bin/

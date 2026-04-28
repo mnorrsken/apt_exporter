@@ -1,0 +1,35 @@
+# syntax=docker/dockerfile:1
+ARG BUILDPLATFORM
+FROM --platform=$BUILDPLATFORM golang:1.24-bookworm AS builder
+WORKDIR /build
+COPY go.mod go.sum ./
+RUN go mod download
+COPY . .
+ARG TARGETOS TARGETARCH VERSION=dev
+RUN CGO_ENABLED=0 GOOS=${TARGETOS} GOARCH=${TARGETARCH} go build \
+    -ldflags "-s -w -X main.version=${VERSION}" \
+    -o /apt_exporter ./cmd/apt_exporter
+
+FROM --platform=$BUILDPLATFORM debian:bookworm-slim AS packager
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends dpkg-dev && \
+    rm -rf /var/lib/apt/lists/*
+ARG TARGETARCH VERSION=0.0.0
+WORKDIR /staging
+COPY packaging/debian/ /staging/DEBIAN/
+COPY packaging/systemd/apt-exporter.service /staging/lib/systemd/system/apt-exporter.service
+COPY LICENSE /staging/usr/share/doc/apt-exporter/copyright
+COPY --from=builder /apt_exporter /staging/usr/bin/apt_exporter
+RUN VER="${VERSION#v}" && \
+    sed -i "s/@VERSION@/${VER}/g; s/@ARCH@/${TARGETARCH}/g" /staging/DEBIAN/control && \
+    chmod 0755 /staging/DEBIAN/postinst /staging/DEBIAN/prerm /staging/DEBIAN/postrm \
+              /staging/usr/bin/apt_exporter && \
+    chmod 0644 /staging/DEBIAN/control \
+              /staging/lib/systemd/system/apt-exporter.service \
+              /staging/usr/share/doc/apt-exporter/copyright && \
+    mkdir /out && \
+    dpkg-deb --build --root-owner-group /staging \
+        "/out/apt-exporter_${VER}_${TARGETARCH}.deb"
+
+FROM scratch AS export
+COPY --from=packager /out/*.deb /

@@ -1,4 +1,5 @@
 .scratchpad
 bin/
+dist/
 ./apt_exporter
 *.exe
