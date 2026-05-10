@@ -1,0 +1,15 @@
+Reading package lists...
+Building dependency tree...
+Reading state information...
+Calculating upgrade...
+The following packages will be upgraded:
+  libheif-plugin-aomdec libheif-plugin-aomenc libheif-plugin-libde265 libheif1
+4 upgraded, 0 newly installed, 0 to remove and 0 not upgraded.
+Inst libheif1 [1.17.6-1ubuntu4.2] (1.17.6-1ubuntu4.3 Ubuntu:24.04/noble-updates [amd64])
+Inst libheif-plugin-aomdec [1.17.6-1ubuntu4.2] (1.17.6-1ubuntu4.3 Ubuntu:24.04/noble-updates [amd64]) [libheif1:amd64 ]
+Inst libheif-plugin-aomenc [1.17.6-1ubuntu4.2] (1.17.6-1ubuntu4.3 Ubuntu:24.04/noble-updates [amd64]) [libheif1:amd64 ]
+Inst libheif-plugin-libde265 [1.17.6-1ubuntu4.2] (1.17.6-1ubuntu4.3 Ubuntu:24.04/noble-updates [amd64]) [libheif1:amd64 ]
+Conf libheif1 (1.17.6-1ubuntu4.3 Ubuntu:24.04/noble-updates [amd64])
+Conf libheif-plugin-aomdec (1.17.6-1ubuntu4.3 Ubuntu:24.04/noble-updates [amd64])
+Conf libheif-plugin-aomenc (1.17.6-1ubuntu4.3 Ubuntu:24.04/noble-updates [amd64])
+Conf libheif-plugin-libde265 (1.17.6-1ubuntu4.3 Ubuntu:24.04/noble-updates [amd64])

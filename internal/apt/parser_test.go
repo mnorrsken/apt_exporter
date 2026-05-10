@@ -128,6 +128,32 @@ func TestParseMultiOrigin(t *testing.T) {
 	assertPackages(t, result.Packages, expected)
 }
 
+func TestParseTriggeredPackage(t *testing.T) {
+	output := readFixture(t, "apt_output_triggered.txt")
+	result, err := Parse(output)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	if got := result.TotalPending(); got != 4 {
+		t.Errorf("TotalPending() = %d, want 4", got)
+	}
+
+	expected := []PackageUpgrade{
+		{Package: "libheif1", FromVersion: "1.17.6-1ubuntu4.2", ToVersion: "1.17.6-1ubuntu4.3", Origin: "Ubuntu:24.04/noble-updates", Arch: "amd64"},
+		{Package: "libheif-plugin-aomdec", FromVersion: "1.17.6-1ubuntu4.2", ToVersion: "1.17.6-1ubuntu4.3", Origin: "Ubuntu:24.04/noble-updates", Arch: "amd64"},
+		{Package: "libheif-plugin-aomenc", FromVersion: "1.17.6-1ubuntu4.2", ToVersion: "1.17.6-1ubuntu4.3", Origin: "Ubuntu:24.04/noble-updates", Arch: "amd64"},
+		{Package: "libheif-plugin-libde265", FromVersion: "1.17.6-1ubuntu4.2", ToVersion: "1.17.6-1ubuntu4.3", Origin: "Ubuntu:24.04/noble-updates", Arch: "amd64"},
+	}
+
+	assertPackages(t, result.Packages, expected)
+
+	pending := result.PendingByOriginArch()
+	if got := pending[[2]string{"Ubuntu:24.04/noble-updates", "amd64"}]; got != 4 {
+		t.Errorf("noble-updates/amd64 count = %d, want 4", got)
+	}
+}
+
 func TestParseEmptyString(t *testing.T) {
 	result, err := Parse("")
 	if err != nil {

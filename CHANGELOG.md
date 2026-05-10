@@ -4,6 +4,15 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## v0.1.11
+
+### Fixed
+- **Triggered-package parsing** — packages auto-installed via a trigger (e.g. `libheif1` triggering `libheif-plugin-*`) include an extra `[trigger:arch]` field at the end of the apt-get output line. The parser previously misread this trigger token as the architecture, producing labels like `arch="libheif1:amd64"`. The arch is now extracted only from inside the parenthesised group.
+
+### Changed
+- **Go 1.26** — bumped Go toolchain in `go.mod` and both Dockerfiles to `1.26`.
+- **Dependabot** — added `.github/dependabot.yml` with weekly updates for Go modules, GitHub Actions, and Docker base images.
+
 ## v0.1.10
 
 ### Added
