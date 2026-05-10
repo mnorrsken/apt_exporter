@@ -30,7 +30,7 @@ tolerations:
 
 serviceMonitor:
   enabled: false
-  interval: 60m
+  interval: ""  # empty = use Prometheus global scrapeInterval
   namespace: ""
   additionalLabels: {}
 

@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## v0.1.13
+
+### Changed
+- **ServiceMonitor scrape interval** — default `serviceMonitor.interval` is now empty so the Prometheus global `scrapeInterval` applies, matching `node_exporter` behaviour. The previous 60m default delayed alerts on `apt_upgrades_pending` / `node_reboot_required` for no real benefit. Override via `--set serviceMonitor.interval=…` if you want a custom value.
+
 ## v0.1.12
 
 ### Changed

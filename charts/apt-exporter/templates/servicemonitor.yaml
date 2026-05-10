@@ -19,7 +19,9 @@ spec:
       {{- include "apt-exporter.selectorLabels" . | nindent 6 }}
   endpoints:
     - port: metrics
-      interval: {{ .Values.serviceMonitor.interval }}
+      {{- with .Values.serviceMonitor.interval }}
+      interval: {{ . }}
+      {{- end }}
       relabelings:
         - sourceLabels: [__meta_kubernetes_pod_node_name]
           targetLabel: node
