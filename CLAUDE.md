@@ -1,75 +1,37 @@
 # apt_exporter
 
-Prometheus exporter for APT package upgrade metrics on Debian/Ubuntu systems.
+Prometheus exporter for APT package upgrade metrics on Debian/Ubuntu. Go.
+Ships as a multi-arch container image and Helm chart on GHCR, and as a `.deb`
+with a systemd unit (`packaging/`).
 
-## Build & Test
+## Commands
 
-```bash
-make build            # Build binary to ./bin/apt_exporter
-make test             # Run unit tests
-make test-integration # Run integration tests (requires Docker)
-make lint             # Run golangci-lint
-make docker-build     # Build Docker image
-```
+- `make build` (to `bin/apt_exporter`), `make build-static`, `make run`
+- `make test` (unit), `make test-integration` (needs Docker), `make lint`,
+  `make vet`, `make fmt`
+- `make docker-build`, `make deb`
 
-## Release Process
+## Verify before done
 
-### Version scheme
-`vMAJOR.MINOR.PATCH` — bump **minor** for new features, **patch** for bug fixes/small changes.
+`make test` and `make lint` green. `make test-integration` when the change
+touches `internal/apt`, `internal/hook` or `internal/watcher` (they shell out
+to apt and watch the dpkg state on a real system).
 
-### Step-by-step
+## Layout
 
-#### 1. Commit the feature/fix changes first
-```bash
-git add <files>
-git commit -m "Short description of change"
-```
+`internal/apt` runs and parses apt, `internal/collector` exposes the metrics,
+`internal/hook` and `internal/watcher` react to apt/dpkg activity,
+`internal/service` wires it together. Metrics use the stdlib exposition
+convention from the wiki skill "Go Prometheus Metrics".
 
-#### 2. Check current version
-```bash
-git tag --sort=-v:refname | head -5
-```
-Latest tag = current version. Determine next version based on change type.
+## Release notes (what differs from the wiki "GitHub Release Process" skill)
 
-#### 3. Update CHANGELOG.md
-Add a new section **at the top** (below the intro line), before the previous latest version:
-```markdown
-## vX.Y.Z
-
-### Added
-- **Feature name** — description of what was added.
-
-### Changed
-- **Thing** — description of what changed.
-
-### Fixed
-- **Bug** — description of the fix.
-```
-Only include the headings that apply.
-
-#### 4. Update README.md
-- In the **Features** list: update or add a bullet for the new capability
-- In the relevant **Usage** section: add/update docs
-- Keep it concise, match the existing style
-
-#### 5. Commit changelog + readme together with the feature commit
-Preferred: combine all changed files into a single commit:
-```bash
-git add CHANGELOG.md README.md <code files>
-git commit -m "Add <feature> (vX.Y.Z)"
-```
-
-#### 6. Tag and push
-```bash
-git tag vX.Y.Z
-git push origin main
-git push origin vX.Y.Z
-```
-
-### Notes
-- Files modified per release: `CHANGELOG.md`, `README.md`, plus the actual code files
-- No version string in Go source — version is tracked only via git tags
-- GitHub Actions triggers on version tags:
-  - `.github/workflows/release.yml` — builds and pushes multi-arch Docker image to GHCR
-  - `.github/workflows/helm.yml` — sets Chart/appVersion from tag, packages and pushes Helm chart to GHCR OCI registry
-- Commit message convention: `Add <feature> (vX.Y.Z)` or `Fix <thing> (vX.Y.Z)`
+- Changelog heading: `## vX.Y.Z` (Keep a Changelog sections, only the ones
+  that apply).
+- README: add or update a "Features" bullet and the relevant "Usage" section
+  for a new capability.
+- One commit for code, changelog and readme: `Add <feature> (vX.Y.Z)` or
+  `Fix <thing> (vX.Y.Z)`. No version string in Go source; git tags only.
+- On `v*` tags: `release.yml` builds and pushes the multi-arch image to GHCR;
+  `helm.yml` sets `Chart.yaml` `version`/`appVersion` from the tag (never bump
+  by hand), packages and pushes the chart to the GHCR OCI registry.
