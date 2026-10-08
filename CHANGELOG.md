@@ -4,6 +4,17 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## v0.1.14
+
+### Changed
+- **Base images** — Dockerfile and Dockerfile.deb now build on `golang:1.27-trixie` and run/package on `debian:trixie-slim` (were `golang:1.26`/`1.27-bookworm` and `debian:bookworm-slim`). The `.deb` built on trixie was checked to install on Ubuntu 22.04 and Debian bookworm.
+- **Dependency updates** — all Go modules, including indirect and integration-test dependencies, were updated (e.g. `client_golang` 1.25.0, OpenTelemetry 1.47, `x/crypto` 0.57, `testcontainers-go` 0.44).
+- **Dependabot** — Go module updates now include indirect dependencies.
+- **golangci-lint v2** — `.golangci.yml` converted to the v2 format with the same linters (`gosimple` is now part of `staticcheck`).
+
+### Fixed
+- **Signal context on server error** — the signal context is now cancelled explicitly before `os.Exit(1)` when the HTTP server fails, instead of via a `defer` that never ran.
+
 ## v0.1.13
 
 ### Changed

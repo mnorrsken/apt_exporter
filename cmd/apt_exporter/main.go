@@ -139,7 +139,6 @@ func main() {
 
 	// Set up context with signal handling.
 	ctx, cancel := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
-	defer cancel()
 
 	// Check if apt-get is available.
 	runner := apt.NewRunner(*rootfs)
@@ -208,7 +207,9 @@ func main() {
 	}()
 
 	logger.Info("listening", "address", *listenAddress)
-	if err := server.ListenAndServe(); err != http.ErrServerClosed {
+	err = server.ListenAndServe()
+	cancel()
+	if err != http.ErrServerClosed {
 		logger.Error("HTTP server error", "err", err)
 		os.Exit(1)
 	}
@@ -236,4 +237,3 @@ func updateLoop(ctx context.Context, triggerCh <-chan struct{}, runner *apt.Runn
 		}
 	}
 }
-

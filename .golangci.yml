@@ -1,3 +1,5 @@
+version: "2"
+
 run:
   timeout: 2m
 
@@ -7,6 +9,11 @@ linters:
     - errcheck
     - staticcheck
     - unused
-    - gosimple
     - ineffassign
     - gocritic
+  exclusions:
+    presets:
+      - comments
+      - common-false-positives
+      - legacy
+      - std-error-handling
