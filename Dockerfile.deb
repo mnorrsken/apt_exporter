@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1
 ARG BUILDPLATFORM
-FROM --platform=$BUILDPLATFORM golang:1.27-bookworm AS builder
+FROM --platform=$BUILDPLATFORM golang:1.27-trixie AS builder
 WORKDIR /build
 COPY go.mod go.sum ./
 RUN go mod download
@@ -10,7 +10,7 @@ RUN CGO_ENABLED=0 GOOS=${TARGETOS} GOARCH=${TARGETARCH} go build \
     -ldflags "-s -w -X main.version=${VERSION}" \
     -o /apt_exporter ./cmd/apt_exporter
 
-FROM --platform=$BUILDPLATFORM debian:bookworm-slim AS packager
+FROM --platform=$BUILDPLATFORM debian:trixie-slim AS packager
 RUN apt-get update && \
     apt-get install -y --no-install-recommends dpkg-dev && \
     rm -rf /var/lib/apt/lists/*
