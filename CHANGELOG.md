@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## v0.1.15
+
+### Security
+- **CVE-2026-111497 (Brotli decoder)** — container image rebuilt so it ships the fixed `libbrotli1` 1.1.0-2+deb13u1 from trixie-security (pulled in by `curl`; v0.1.14 had 1.1.0-2+b7). The Go binary and the `.deb` do not use Brotli and are unchanged.
+
 ## v0.1.14
 
 ### Changed
