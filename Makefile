@@ -4,7 +4,7 @@ LDFLAGS    := -X main.version=$(VERSION) -X main.buildDate=$(shell date -u +%Y-%
 GO         := go
 GOLANGCI   := golangci-lint
 
-.PHONY: build test test-integration run clean docker-build deb deb-amd64 deb-arm64 lint fmt vet
+.PHONY: build test test-integration run clean docker-build deb deb-amd64 deb-arm64 lint fmt vet vuln
 
 build:
 	$(GO) build -ldflags "$(LDFLAGS)" -o bin/$(BINARY) ./cmd/apt_exporter
@@ -53,3 +53,6 @@ fmt:
 
 vet:
 	$(GO) vet ./...
+
+vuln:
+	$(GO) run golang.org/x/vuln/cmd/govulncheck@v1.9.0 ./...
