@@ -4,6 +4,15 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## v0.1.16
+
+### Changed
+- **Go 1.27** — `go.mod` now requires Go 1.27.
+- **Dependency updates** — `x/crypto` 0.58.0, `x/sys` 0.49.0, `prometheus/common` 0.72.1, `klauspost/compress` 1.20.3, `moby/moby/client` 0.6.2 and `go-winio` 0.6.4.
+
+### Security
+- **govulncheck before release** — `release.yml` runs `govulncheck` first; the image and `.deb` builds only start if it passes. `make vuln` runs the same check locally.
+
 ## v0.1.15
 
 ### Security
