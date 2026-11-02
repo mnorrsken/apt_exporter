@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## v0.1.18
+
+### Changed
+- **Dependency updates** — `prometheus/common` 0.73.0, `prometheus/procfs` 0.23.0, `gopsutil/v4` 4.26.10, `moby/sys/user` 0.5.0 and `go.yaml.in/yaml/v3` 3.0.6. New indirect modules: `hashicorp/go-uuid` 1.0.3 and `pandatix/go-abnf` 0.5.1.
+
 ## v0.1.17
 
 ### Changed
