@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## v0.1.19
+
+### Changed
+- **Dependency updates** — `ebitengine/purego` 0.11.3, `prometheus/common` 0.73.1 and `pandatix/go-abnf` 0.5.5. The indirect module `hashicorp/go-uuid` is no longer needed.
+
 ## v0.1.18
 
 ### Changed
