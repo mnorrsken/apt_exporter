@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## v0.1.20
+
+### Changed
+- **Dependency updates** — `testcontainers-go` 0.45.0, `prometheus/common` 0.74.0, `klauspost/compress` 1.20.4, `x/crypto` 0.59.0 and `x/sys` 0.50.0.
+
 ## v0.1.19
 
 ### Changed
