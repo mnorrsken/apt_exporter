@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## v0.1.21
+
+### Changed
+- **Dependency updates** — `moby/moby/api` 1.57.0, `moby/moby/client` 0.6.3 and `magiconair/properties` 1.18.13 (all indirect).
+
 ## v0.1.20
 
 ### Changed
